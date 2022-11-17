@@ -16,6 +16,8 @@ public class Main {
 
     private static final String flag1 = "+---";
     private static final String flag2 = "|";
+
+    private static final String flag7 = "com.cmccit:";
     private static final String flag3 = "project";
     private static final String flag4 = "\\---";
     private static final String flag5 = "->";
@@ -59,7 +61,7 @@ public class Main {
             mapStack.put(stack, baseNode);
 
             mapStack.get(stack - 5).setChildBean(baseNode);
-            for (Map.Entry<Integer, BaseNode> entry:mapStack.entrySet()){
+            for (Map.Entry<Integer, BaseNode> entry : mapStack.entrySet()) {
 
             }
         }
@@ -69,7 +71,7 @@ public class Main {
     public static int headSpaceNum(String line) {
         int num = 0;
         for (int i = 0; i < line.length(); i++) {
-            if (!Character.isLowerCase(line.charAt(i)) && !Character.isUpperCase(line.charAt(i)) && (line.charAt(i)!=":".charAt(0))) {
+            if (!Character.isLowerCase(line.charAt(i)) && !Character.isUpperCase(line.charAt(i)) && (line.charAt(i) != ":".charAt(0))) {
                 num++;
             } else {
                 break;
@@ -106,18 +108,24 @@ public class Main {
     public static BaseNode parseLine(String line, int id) {
         BaseNode childNode = new BaseNode();
         childNode.setId(id);
-        System.out.println(">>>"+id);
+        System.out.println(">>>" + id);
         //第一个分号位置
         int startIndex = 0;
         if (line.contains(":")) {
             int firstIndex = line.indexOf(":");
             for (int i = 0; i < line.length(); i++) {
-                if (Character.isLowerCase(line.charAt(i))||Character.isUpperCase(line.charAt(i))) {
+                if (Character.isLowerCase(line.charAt(i)) || Character.isUpperCase(line.charAt(i))) {
                     startIndex = i;
                     break;
                 }
             }
-            if (line.replaceFirst(":","").contains(":")) {
+            if (line.contains(flag3)) {
+                childNode.setType(type1);
+            }
+            if (line.contains(flag7)) {
+                childNode.setType(type2);
+            }
+            if (line.replaceFirst(":", "").contains(":")) {
                 childNode.setPath(line.substring(startIndex, firstIndex));
                 if (line.contains(":")) {
                     //第二个：位置
@@ -143,8 +151,8 @@ public class Main {
                 } else {
                     childNode.setName(line.substring(firstIndex + 1));
                 }
-            }else {
-                childNode.setName(line.substring(firstIndex+1));
+            } else {
+                childNode.setName(line.substring(firstIndex + 1));
             }
 
 
