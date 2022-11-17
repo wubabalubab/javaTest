@@ -1,0 +1,2 @@
+# javaTest
+parse gradle depandence
