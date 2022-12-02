@@ -1,5 +1,8 @@
 package org.example;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,13 +26,19 @@ public class Main {
     private static final String flag5 = "->";
 
     private static final String flag6 = "(*)";
-    private static final String path = "C:\\Users\\KK\\Documents\\orgion.txt";
+    private static final String path = "C:\\Users\\ss\\Desktop\\orgion.txt";
     private static int index;
     private static BaseNode rootNode;
 
+    private static final String targetFile="C:\\Users\\ss\\Desktop\\target.txt";
+
     private static List<String> orgionList = new ArrayList<>();
+    private static List<String> targetList;
 
     public static void main(String[] args) {
+
+        targetList = new ArrayList<>();
+        getTargetList(targetList);
 
         String temp = "|||androidx.lifecycle:lifecycle-runtime:2.3.1 -> 2.4.0 (*)";
 //        String temp="|||androidx.lifecycle:lifecycle-runtime:2.3.1 (*)";
@@ -46,7 +55,22 @@ public class Main {
         parseFile();
 
         excute();
+        rootNode.getChildList(targetList);
 
+    }
+
+    private static void getTargetList(List<String> targetList) {
+        File fileTarget=new File(targetFile);
+        try (InputStreamReader inputStreamReader=new InputStreamReader(new FileInputStream(fileTarget))){
+            BufferedReader bufferedReader=new BufferedReader(inputStreamReader);
+            String tempTarget=bufferedReader.readLine();
+            while (tempTarget != null) {
+                targetList.add(tempTarget);
+                tempTarget=bufferedReader.readLine();
+            }
+        }catch (Exception e){
+
+        }
     }
 
     private static void excute() {
@@ -65,7 +89,19 @@ public class Main {
 
             }
         }
-        rootNode.soutall();
+
+//        rootNode.printForName("basemodule");
+//        rootNode.getChildList(targetList);
+
+        for (BaseNode baseNode : rootNode.getChildList()) {
+            if (type1.equals(baseNode.getType())) {
+                for (BaseNode node : baseNode.getChildList()) {
+                    System.out.println(node.getName());
+                }
+            }else {
+                System.out.println(baseNode.getName());
+            }
+        }
     }
 
     public static int headSpaceNum(String line) {
@@ -108,7 +144,7 @@ public class Main {
     public static BaseNode parseLine(String line, int id) {
         BaseNode childNode = new BaseNode();
         childNode.setId(id);
-        System.out.println(">>>" + id);
+//        System.out.println(">>>" + id);
         //第一个分号位置
         int startIndex = 0;
         if (line.contains(":")) {
@@ -131,7 +167,7 @@ public class Main {
                     //第二个：位置
                     int lastIndex = line.replaceFirst(":", "").indexOf(":");
                     if (lastIndex != -1) {
-                        childNode.setName(line.substring(firstIndex + 1, lastIndex));
+                        childNode.setName(line.substring(firstIndex + 1, lastIndex+1));
                         if (line.contains(flag5)) {
                             int start = line.indexOf(flag5);
                             for (int i = start + 2; i < line.length(); i++) {
