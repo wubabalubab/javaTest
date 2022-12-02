@@ -1,16 +1,19 @@
 package org.example;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class BaseNode {
 
+    static boolean returned = false;
     private int id;
     private String name;
     private String type;
     private String path;
-
     private BaseNode parentNode;
     private String version;
     private List<BaseNode> childList;
@@ -50,7 +53,6 @@ public class BaseNode {
     public void setLastList(boolean lastList) {
         isLastList = lastList;
     }
-
 
     public String getName() {
         return name;
@@ -113,24 +115,46 @@ public class BaseNode {
         return Objects.hash(getName(), getType(), getPath(), getVersion());
     }
 
-    public void getNodeForId(int id) {
-        if (this.id == id) {
-            System.out.println(this);
+    public void printForName(String name) {
+        if (returned) {
+            return;
         }
-        if (childList != null && childList.size() > 0) {
+        if (this.name != null && this.name.length() > 0) {
+            if (this.name.equals(name)) {
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
+                System.out.println(gson.toJson(this));
+                returned = true;
+                return;
+            }
+        }
+        if (this.childList != null && this.childList.size() > 0) {
             for (BaseNode node : childList) {
-                 node.getNodeForId(id);
+                node.printForName(name);
             }
         }
     }
-    public void soutall(){
-        System.out.println(this);
-        if (childList != null &&childList.size()>0) {
+
+    public void getChildList(List<String> targetList) {
+
+        if (this.name != null && this.name.length() > 0) {
+            if (targetList.contains(this.name)) {
+                System.out.println(this.name);
+                if (this.getChildList() != null && this.getChildList().size() > 0) {
+                    for (BaseNode baseNode : this.getChildList()) {
+                        System.out.println(">>>> " + baseNode.getPath() + ":" + baseNode.getName() + ":" + baseNode.getVersion());
+                    }
+                }
+                System.out.println("");
+                targetList.remove(name);
+            }
+        }
+        if (this.childList != null && this.childList.size() > 0) {
             for (BaseNode node : childList) {
-                node.soutall();
+                node.getChildList(targetList);
             }
         }
     }
+
 
     @Override
     public String toString() {
@@ -139,10 +163,10 @@ public class BaseNode {
                 ", name='" + name + '\'' +
                 ", type='" + type + '\'' +
                 ", path='" + path + '\'' +
+                ", parentNode=" + parentNode +
                 ", version='" + version + '\'' +
                 ", childList=" + childList +
                 ", isLastList=" + isLastList +
                 '}';
-
     }
 }
